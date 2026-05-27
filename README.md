@@ -9,6 +9,7 @@ This is the DSL2 Nextflow implementation of the HyperPETE hematology workflow.
 - `conf/containers.config`: pinned container images.
 - `assets/`: example parameter files.
 - `bin/gencore_multiqc_custom.py`: small helper used to add GenCore and pipeline links to MultiQC.
+- `docs/pipeline_overview.dot`: simplified Graphviz overview of the workflow.
 - `multiqc_config.yaml`: MultiQC configuration.
 
 ## Run Example
@@ -58,6 +59,19 @@ results/
 Every process writes explicit `.out` and `.err` logs into `stout_sterr`, in addition to Nextflow's native `.command.*` files in `work/`.
 
 The pipeline uses `errorStrategy = 'terminate'`, so a failed sample stops the workflow before cohort artifact marking. `MAKE_VCF_LIST` also checks that final merged VCFs exist and fails with a clear error if none are available.
+
+## Pipeline Graph
+
+The raw Nextflow DAG is very detailed, so this repository includes a simplified
+Graphviz overview with only the main biological and reporting stages.
+
+Render it with Graphviz:
+
+```bash
+dot -Tsvg docs/pipeline_overview.dot -o docs/pipeline_overview.svg
+dot -Tpdf docs/pipeline_overview.dot -o docs/pipeline_overview.pdf
+dot -Tpng docs/pipeline_overview.dot -o docs/pipeline_overview.png
+```
 
 ## Important Output Cleanup
 

@@ -1,0 +1,246 @@
+digraph HemaLab_HyperPETE_Nextflow {
+  graph [
+    rankdir=LR,
+    bgcolor="white",
+    label="HemaLab HyperPETE Nextflow Pipeline",
+    labelloc=t,
+    fontsize=24,
+    fontname="Helvetica",
+    pad=0.35,
+    nodesep=0.45,
+    ranksep=0.85,
+    splines=ortho
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fontname="Helvetica",
+    fontsize=11,
+    color="#2f3a45",
+    fillcolor="#f8fafc",
+    penwidth=1.4,
+    margin="0.12,0.08"
+  ];
+
+  edge [
+    fontname="Helvetica",
+    fontsize=9,
+    color="#667085",
+    arrowsize=0.7,
+    penwidth=1.2
+  ];
+
+  input_fastq [
+    label="Paired FASTQs\n*_R1/_R2*.fastq.gz",
+    shape=folder,
+    fillcolor="#e8f3ff"
+  ];
+
+  references [
+    label="Reference Inputs\nFASTA + indexes\nBED panel\nPoNs + gnomAD\nCNVkit reference\nAnnovar DBs",
+    shape=component,
+    fillcolor="#eef6ed"
+  ];
+
+  subgraph cluster_preprocess {
+    label="Read Preprocessing and Alignment";
+    color="#b8d8f2";
+    fillcolor="#f4f9ff";
+    style="rounded,filled";
+    fontname="Helvetica";
+    fontsize=14;
+
+    fastp [label="FASTP\ntrim/filter reads", fillcolor="#dff0ff"];
+    bwa [label="BWA_MEM\nalign to reference", fillcolor="#dff0ff"];
+    samtools_view [label="SAMTOOLS_VIEW\nSAM -> BAM", fillcolor="#dff0ff"];
+    sort_pre_umi [label="SORT_PRE_UMI\ncoordinate sort", fillcolor="#dff0ff"];
+    index_pre_umi [label="INDEX_PRE_UMI\nBAM index", fillcolor="#dff0ff"];
+    flagstat [label="SAMTOOLS_FLAGSTAT\nalignment QC", fillcolor="#f7fbff"];
+  }
+
+  subgraph cluster_umi {
+    label="UMI Consensus Branches";
+    color="#c8ded2";
+    fillcolor="#f4fbf6";
+    style="rounded,filled";
+    fontname="Helvetica";
+    fontsize=14;
+
+    gencore_umi2 [label="GENCORE_UMI2\nstandard consensus", fillcolor="#e3f4e8"];
+    gencore_strict [label="GENCORE_STRICT\nstrict duplex consensus", fillcolor="#e3f4e8"];
+
+    sort_umi2 [label="SORT_UMI2", fillcolor="#e3f4e8"];
+    sort_strict [label="SORT_STRICT", fillcolor="#e3f4e8"];
+    index_umi2 [label="INDEX_UMI2", fillcolor="#e3f4e8"];
+    index_strict [label="INDEX_STRICT", fillcolor="#e3f4e8"];
+    add_rg_umi2 [label="ADD_RG_UMI2", fillcolor="#e3f4e8"];
+    add_rg_strict [label="ADD_RG_STRICT", fillcolor="#e3f4e8"];
+    index_rg_umi2 [label="INDEX_RG_UMI2", fillcolor="#e3f4e8"];
+    index_rg_strict [label="INDEX_RG_STRICT", fillcolor="#e3f4e8"];
+  }
+
+  subgraph cluster_qc_cnv {
+    label="Coverage QC and CNVkit";
+    color="#f1d39a";
+    fillcolor="#fffaf0";
+    style="rounded,filled";
+    fontname="Helvetica";
+    fontsize=14;
+
+    mosdepth_before [label="MOSDEPTH_BEFORE\npre-UMI coverage", fillcolor="#fff0cf"];
+    mosdepth_after [label="MOSDEPTH_AFTER\npost-UMI coverage", fillcolor="#fff0cf"];
+    stats_summary [label="STATS_SUMMARY\nsample statistics", fillcolor="#fff0cf"];
+
+    cnvkit_batch [label="CNVKIT_BATCH", fillcolor="#fff0cf"];
+    cnvkit_genemetrics [label="CNVKIT_GENEMETRICS", fillcolor="#fff0cf"];
+    cnvkit_scatter [label="CNVKIT_SCATTER\nchr plots + summary", fillcolor="#fff0cf"];
+  }
+
+  subgraph cluster_calling {
+    label="Variant Calling";
+    color="#dcc7ee";
+    fillcolor="#fbf7ff";
+    style="rounded,filled";
+    fontname="Helvetica";
+    fontsize=14;
+
+    mutect_umi2 [label="MUTECT_UMI2", fillcolor="#f1e6ff"];
+    mutect_strict [label="MUTECT_STRICT", fillcolor="#f1e6ff"];
+    filter_mutect_umi2 [label="FILTER_MUTECT_UMI2", fillcolor="#f1e6ff"];
+    filter_mutect_strict [label="FILTER_MUTECT_STRICT", fillcolor="#f1e6ff"];
+    norm_mutect_umi2 [label="NORM_MUTECT_UMI2\n+ .tbi", fillcolor="#f1e6ff"];
+    norm_mutect_strict [label="NORM_MUTECT_STRICT\n+ .tbi", fillcolor="#f1e6ff"];
+
+    vardict_umi2 [label="VARDICT_UMI2", fillcolor="#f1e6ff"];
+    vardict_strict [label="VARDICT_STRICT", fillcolor="#f1e6ff"];
+    norm_vardict_umi2 [label="NORM_VARDICT_UMI2\n+ .tbi", fillcolor="#f1e6ff"];
+    norm_vardict_strict [label="NORM_VARDICT_STRICT\n+ .tbi", fillcolor="#f1e6ff"];
+  }
+
+  subgraph cluster_merge_annotate {
+    label="Merge and Annotate Per Sample";
+    color="#f0b6b6";
+    fillcolor="#fff6f6";
+    style="rounded,filled";
+    fontname="Helvetica";
+    fontsize=14;
+
+    merge_callers_umi2 [label="MERGE_CALLERS_UMI2\nMutect + VarDict", fillcolor="#ffe4e4"];
+    merge_callers_strict [label="MERGE_CALLERS_STRICT\nMutect + VarDict", fillcolor="#ffe4e4"];
+    sort_merged_umi2 [label="SORT_MERGED_UMI2", fillcolor="#ffe4e4"];
+    sort_merged_strict [label="SORT_MERGED_STRICT", fillcolor="#ffe4e4"];
+    merge_umis [label="MERGE_UMIS\nUMI2 + strict", fillcolor="#ffe4e4"];
+    sort_merged_umis [label="SORT_MERGED_UMIS", fillcolor="#ffe4e4"];
+    bgzip_final [label="BGZIP_FINAL_MERGE\nfinal VCF.gz + .tbi", fillcolor="#ffe4e4"];
+    convert_final [label="CONVERT_FINAL\nVCF -> avinput", fillcolor="#ffe4e4"];
+    table_final [label="TABLE_FINAL\nAnnovar", fillcolor="#ffe4e4"];
+    add_dpaf_final [label="ADD_DPAF_FINAL", fillcolor="#ffe4e4"];
+  }
+
+  subgraph cluster_cohort {
+    label="Cohort Artifact Marking and Final Reports";
+    color="#c6ccd6";
+    fillcolor="#f8f9fb";
+    style="rounded,filled";
+    fontname="Helvetica";
+    fontsize=14;
+
+    make_vcf_list [label="MAKE_VCF_LIST\nwaits for all final VCFs", fillcolor="#edf0f5"];
+    mark_artifacts [label="MARK_ARTIFACTS\ncohort artifact labels", fillcolor="#edf0f5"];
+    convert_marked [label="CONVERT_MARKED", fillcolor="#edf0f5"];
+    table_marked [label="TABLE_MARKED\nAnnovar", fillcolor="#edf0f5"];
+    add_dpaf_marked [label="ADD_DPAF_MARKED\nfinal marked CSV", fillcolor="#edf0f5"];
+    multiqc [label="MULTIQC\ninteractive HTML report", fillcolor="#edf0f5"];
+    keep_important [label="KEEP_IMPORTANT_OUTPUTS\noptional output pruning", fillcolor="#edf0f5"];
+  }
+
+  sample_outputs [
+    label="Per-Sample Results\nstats/\ncnvkit/\nstout_sterr/\nfinal CSV/VCFs/BAMs",
+    shape=folder,
+    fillcolor="#e8f3ff"
+  ];
+
+  pipeline_reports [
+    label="Pipeline Reports\nexecution_trace.txt\nexecution_report.html\nexecution_timeline.html\npipeline_dag.html",
+    shape=note,
+    fillcolor="#eef2ff"
+  ];
+
+  input_fastq -> fastp;
+  references -> bwa;
+  references -> gencore_umi2;
+  references -> gencore_strict;
+  references -> mutect_umi2;
+  references -> mutect_strict;
+  references -> vardict_umi2;
+  references -> vardict_strict;
+  references -> table_final;
+  references -> table_marked;
+  references -> cnvkit_batch;
+
+  fastp -> bwa -> samtools_view -> sort_pre_umi -> index_pre_umi;
+  index_pre_umi -> flagstat;
+  index_pre_umi -> mosdepth_before;
+
+  index_pre_umi -> gencore_umi2;
+  index_pre_umi -> gencore_strict;
+
+  gencore_umi2 -> sort_umi2 -> index_umi2 -> add_rg_umi2 -> index_rg_umi2;
+  gencore_strict -> sort_strict -> index_strict -> add_rg_strict -> index_rg_strict;
+
+  index_rg_umi2 -> mosdepth_after;
+  index_rg_umi2 -> cnvkit_batch -> cnvkit_genemetrics -> cnvkit_scatter;
+
+  index_rg_umi2 -> mutect_umi2 -> filter_mutect_umi2 -> norm_mutect_umi2;
+  index_rg_strict -> mutect_strict -> filter_mutect_strict -> norm_mutect_strict;
+
+  index_rg_umi2 -> vardict_umi2 -> norm_vardict_umi2;
+  index_rg_strict -> vardict_strict -> norm_vardict_strict;
+
+  norm_mutect_umi2 -> merge_callers_umi2;
+  norm_vardict_umi2 -> merge_callers_umi2;
+  norm_mutect_strict -> merge_callers_strict;
+  norm_vardict_strict -> merge_callers_strict;
+
+  merge_callers_umi2 -> sort_merged_umi2;
+  merge_callers_strict -> sort_merged_strict;
+  sort_merged_umi2 -> merge_umis;
+  sort_merged_strict -> merge_umis;
+  merge_umis -> sort_merged_umis -> bgzip_final;
+
+  bgzip_final -> convert_final -> table_final -> add_dpaf_final;
+  bgzip_final -> make_vcf_list -> mark_artifacts -> convert_marked -> table_marked -> add_dpaf_marked;
+
+  add_dpaf_final -> stats_summary;
+  index_rg_umi2 -> stats_summary;
+  mosdepth_before -> stats_summary;
+  flagstat -> stats_summary;
+
+  fastp -> multiqc [label="fastp JSON/HTML", style=dashed];
+  flagstat -> multiqc [label="flagstat", style=dashed];
+  mosdepth_before -> multiqc [label="coverage before", style=dashed];
+  mosdepth_after -> multiqc [label="coverage after", style=dashed];
+  gencore_umi2 -> multiqc [label="GenCore JSON", style=dashed];
+  gencore_strict -> multiqc [label="GenCore JSON", style=dashed];
+  cnvkit_scatter -> multiqc [label="CNV logs", style=dashed];
+  add_dpaf_marked -> multiqc [label="completion", style=dashed];
+
+  add_dpaf_marked -> keep_important;
+  stats_summary -> keep_important;
+  cnvkit_scatter -> keep_important;
+  multiqc -> keep_important;
+
+  stats_summary -> sample_outputs;
+  cnvkit_scatter -> sample_outputs;
+  add_dpaf_marked -> sample_outputs;
+  bgzip_final -> sample_outputs;
+  norm_mutect_umi2 -> sample_outputs;
+  norm_mutect_strict -> sample_outputs;
+  norm_vardict_umi2 -> sample_outputs;
+  norm_vardict_strict -> sample_outputs;
+  index_rg_umi2 -> sample_outputs;
+  index_rg_strict -> sample_outputs;
+
+  multiqc -> pipeline_reports;
+}

@@ -6,6 +6,8 @@ process MULTIQC {
   publishDir { "${params.outdir}/multiqc" }, mode: params.publish_mode
 
   input:
+  path fastqc_raw_reports, stageAs: "multiqc_inputs/fastqc_raw/*"
+  path fastqc_trimmed_reports, stageAs: "multiqc_inputs/fastqc_trimmed/*"
   path fastp_stats, stageAs: "multiqc_inputs/fastp/*"
   path flagstat_stats, stageAs: "multiqc_inputs/flagstat/*"
   path mosdepth_before_stats, stageAs: "multiqc_inputs/mosdepth_before/*"

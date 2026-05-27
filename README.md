@@ -6,6 +6,7 @@ This is the DSL2 Nextflow implementation of the HyperPETE hematology workflow.
 
 - `main.nf`: pipeline orchestrator.
 - `modules/`: one module per command/tool stage.
+- `modules/fastqc.nf`: FastQC module used before and after trimming.
 - `conf/containers.config`: pinned container images.
 - `assets/`: example parameter files.
 - `bin/gencore_multiqc_custom.py`: small helper used to add GenCore and pipeline links to MultiQC.

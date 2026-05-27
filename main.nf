@@ -3,6 +3,8 @@
 nextflow.enable.dsl = 2
 
 include { FASTP } from './modules/fastp'
+include { FASTQC as FASTQC_RAW } from './modules/fastqc'
+include { FASTQC as FASTQC_TRIMMED } from './modules/fastqc'
 include { BWA_MEM } from './modules/bwa_mem'
 include { SAMTOOLS_VIEW } from './modules/samtools_view'
 include { SAMTOOLS_SORT as SORT_PRE_UMI } from './modules/samtools_sort'
@@ -70,7 +72,17 @@ workflow {
     .fromFilePairs("${params.fastq_dir}/*_R{1,2}*.fastq.gz", flat: true)
     .ifEmpty { error "No paired FASTQ files found under: ${params.fastq_dir}" }
 
+  FASTQC_RAW(
+    read_pairs_ch.map { sample_id, r1, r2 ->
+      tuple(sample_id, r1, r2, 'raw')
+    }
+  )
   FASTP(read_pairs_ch)
+  FASTQC_TRIMMED(
+    FASTP.out.reads.map { sample_id, r1, r2 ->
+      tuple(sample_id, r1, r2, 'trimmed')
+    }
+  )
   BWA_MEM(FASTP.out.reads, ref_bundle_ch)
   SAMTOOLS_VIEW(BWA_MEM.out.sam)
 
@@ -317,6 +329,8 @@ workflow {
     .collect()
 
   MULTIQC(
+    FASTQC_RAW.out.reports.map { sample_id, reports, mode -> reports }.flatten().collect(),
+    FASTQC_TRIMMED.out.reports.map { sample_id, reports, mode -> reports }.flatten().collect(),
     FASTP.out.stats.flatten().collect(),
     SAMTOOLS_FLAGSTAT.out.stats.map { sample_id, files -> files }.flatten().collect(),
     MOSDEPTH_BEFORE.out.stats.map { sample_id, files -> files }.flatten().collect(),

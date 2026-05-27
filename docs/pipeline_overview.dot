@@ -54,7 +54,9 @@ digraph HemaLab_HyperPETE_Nextflow {
     fontsize=18;
     margin=10;
 
+    fastqc_raw [label="FASTQC_RAW\npre-trim read QC", fillcolor="#dff0ff"];
     fastp [label="FASTP\ntrim/filter reads", fillcolor="#dff0ff"];
+    fastqc_trimmed [label="FASTQC_TRIMMED\npost-trim read QC", fillcolor="#dff0ff"];
     bwa [label="BWA_MEM\nalign to reference", fillcolor="#dff0ff"];
     samtools_view [label="SAMTOOLS_VIEW\nSAM -> BAM", fillcolor="#dff0ff"];
     sort_pre_umi [label="SORT_PRE_UMI\ncoordinate sort", fillcolor="#dff0ff"];
@@ -175,6 +177,7 @@ digraph HemaLab_HyperPETE_Nextflow {
     fillcolor="#eef2ff"
   ];
 
+  input_fastq -> fastqc_raw;
   input_fastq -> fastp;
   references -> bwa;
   references -> gencore_umi2;
@@ -187,6 +190,7 @@ digraph HemaLab_HyperPETE_Nextflow {
   references -> table_marked;
   references -> cnvkit_batch;
 
+  fastp -> fastqc_trimmed;
   fastp -> bwa -> samtools_view -> sort_pre_umi -> index_pre_umi;
   index_pre_umi -> flagstat;
   index_pre_umi -> mosdepth_before;
@@ -225,6 +229,8 @@ digraph HemaLab_HyperPETE_Nextflow {
   mosdepth_before -> stats_summary;
   flagstat -> stats_summary;
 
+  fastqc_raw -> multiqc [label="raw FastQC", style=dashed];
+  fastqc_trimmed -> multiqc [label="trimmed FastQC", style=dashed];
   fastp -> multiqc [label="fastp JSON/HTML", style=dashed];
   flagstat -> multiqc [label="flagstat", style=dashed];
   mosdepth_before -> multiqc [label="coverage before", style=dashed];

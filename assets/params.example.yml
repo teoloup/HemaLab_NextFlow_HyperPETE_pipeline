@@ -1,0 +1,18 @@
+fastq_dir: null
+outdir: "results"
+work_dir: null
+cleanup_work: false
+keep_important: false
+multiqc_config: "/software/usr/tloupis/tools/multiqc_config.yaml"
+bed_file: "/mnt/beegfs/tloupis/ref_files/bed_files/human/hg38/Hyper_Hema_primary_targets.bed"
+
+ref_file: "/mnt/beegfs/tloupis/ref_files/fasta/human/hg38/hg38.filtered.fa"
+ref_dict: null
+annovar_dbs_dir: "/mnt/beegfs/tloupis/annovar_dbs/hg38"
+pon_umi2: "/mnt/beegfs/tloupis/HematologyNGS/HyperPetePanel_v0200567846/PoN_umi2_controls.vcf.gz"
+pon_umi4: "/mnt/beegfs/tloupis/HematologyNGS/HyperPetePanel_v0200567846/PoN_umi4_controls.vcf.gz"
+germline_resource: "/mnt/beegfs/tloupis/ref_files/annotation_files_DBs/human/hg38/gnomad.exomes.r2.1.1.sites.liftover_grch38.vcf.gz"
+cnvkit_reference: "/mnt/beegfs/tloupis/HematologyNGS/HyperPetePanel_v0200567846/analysis/cnvkit_control_ref.cnn"
+
+umi_thr: 2
+publish_mode: "copy"

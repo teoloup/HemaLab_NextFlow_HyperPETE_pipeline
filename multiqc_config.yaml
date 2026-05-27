@@ -1,0 +1,16 @@
+mosdepth_config:
+  general_stats_coverage:
+    - 500
+    - 1000
+    - 2000
+
+plots_force_flat: false
+
+# Optional: control which of those columns are hidden by default when the report opens.
+# If you want them visible immediately, do not list them here.
+general_stats_coverage_hidden: []
+
+custom_content:
+  order:
+    - pipeline_reports
+    - gencore_summary

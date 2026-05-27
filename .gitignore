@@ -1,0 +1,14 @@
+work/
+.nextflow*
+results/
+*.log
+*.trace
+*.timeline.html
+*.report.html
+*.dag.html
+containers/
+vardict/
+bin/add_dpaf.py
+bin/Mark_artifacts_1.3.1.py
+bin/Merge2Vcfs.py
+bin/stats.2.1.py

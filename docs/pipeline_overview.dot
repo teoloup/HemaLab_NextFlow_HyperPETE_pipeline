@@ -4,11 +4,11 @@ digraph HemaLab_HyperPETE_Nextflow {
     bgcolor="white",
     label="HemaLab HyperPETE Nextflow Pipeline",
     labelloc=t,
-    fontsize=24,
+    fontsize=30,
     fontname="Helvetica",
-    pad=0.35,
-    nodesep=0.45,
-    ranksep=0.85,
+    pad=0.18,
+    nodesep=0.22,
+    ranksep=0.48,
     splines=ortho
   ];
 
@@ -16,19 +16,21 @@ digraph HemaLab_HyperPETE_Nextflow {
     shape=box,
     style="rounded,filled",
     fontname="Helvetica",
-    fontsize=11,
+    fontsize=16,
     color="#2f3a45",
     fillcolor="#f8fafc",
-    penwidth=1.4,
-    margin="0.12,0.08"
+    penwidth=1.8,
+    margin="0.24,0.16",
+    height=0.68,
+    width=2.15
   ];
 
   edge [
     fontname="Helvetica",
-    fontsize=9,
+    fontsize=11,
     color="#667085",
-    arrowsize=0.7,
-    penwidth=1.2
+    arrowsize=0.62,
+    penwidth=1.1
   ];
 
   input_fastq [
@@ -49,7 +51,8 @@ digraph HemaLab_HyperPETE_Nextflow {
     fillcolor="#f4f9ff";
     style="rounded,filled";
     fontname="Helvetica";
-    fontsize=14;
+    fontsize=18;
+    margin=10;
 
     fastp [label="FASTP\ntrim/filter reads", fillcolor="#dff0ff"];
     bwa [label="BWA_MEM\nalign to reference", fillcolor="#dff0ff"];
@@ -65,7 +68,8 @@ digraph HemaLab_HyperPETE_Nextflow {
     fillcolor="#f4fbf6";
     style="rounded,filled";
     fontname="Helvetica";
-    fontsize=14;
+    fontsize=18;
+    margin=10;
 
     gencore_umi2 [label="GENCORE_UMI2\nstandard consensus", fillcolor="#e3f4e8"];
     gencore_strict [label="GENCORE_STRICT\nstrict duplex consensus", fillcolor="#e3f4e8"];
@@ -86,7 +90,8 @@ digraph HemaLab_HyperPETE_Nextflow {
     fillcolor="#fffaf0";
     style="rounded,filled";
     fontname="Helvetica";
-    fontsize=14;
+    fontsize=18;
+    margin=10;
 
     mosdepth_before [label="MOSDEPTH_BEFORE\npre-UMI coverage", fillcolor="#fff0cf"];
     mosdepth_after [label="MOSDEPTH_AFTER\npost-UMI coverage", fillcolor="#fff0cf"];
@@ -103,7 +108,8 @@ digraph HemaLab_HyperPETE_Nextflow {
     fillcolor="#fbf7ff";
     style="rounded,filled";
     fontname="Helvetica";
-    fontsize=14;
+    fontsize=18;
+    margin=10;
 
     mutect_umi2 [label="MUTECT_UMI2", fillcolor="#f1e6ff"];
     mutect_strict [label="MUTECT_STRICT", fillcolor="#f1e6ff"];
@@ -124,7 +130,8 @@ digraph HemaLab_HyperPETE_Nextflow {
     fillcolor="#fff6f6";
     style="rounded,filled";
     fontname="Helvetica";
-    fontsize=14;
+    fontsize=18;
+    margin=10;
 
     merge_callers_umi2 [label="MERGE_CALLERS_UMI2\nMutect + VarDict", fillcolor="#ffe4e4"];
     merge_callers_strict [label="MERGE_CALLERS_STRICT\nMutect + VarDict", fillcolor="#ffe4e4"];
@@ -144,7 +151,8 @@ digraph HemaLab_HyperPETE_Nextflow {
     fillcolor="#f8f9fb";
     style="rounded,filled";
     fontname="Helvetica";
-    fontsize=14;
+    fontsize=18;
+    margin=10;
 
     make_vcf_list [label="MAKE_VCF_LIST\nwaits for all final VCFs", fillcolor="#edf0f5"];
     mark_artifacts [label="MARK_ARTIFACTS\ncohort artifact labels", fillcolor="#edf0f5"];

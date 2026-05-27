@@ -65,6 +65,8 @@ The pipeline uses `errorStrategy = 'terminate'`, so a failed sample stops the wo
 The raw Nextflow DAG is very detailed, so this repository includes a simplified
 Graphviz overview with only the main biological and reporting stages.
 
+![Pipeline overview](docs/pipeline_overview.svg)
+
 Render it with Graphviz:
 
 ```bash

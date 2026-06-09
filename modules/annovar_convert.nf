@@ -19,8 +19,19 @@ process ANNOVAR_CONVERT {
     -format vcf4 ${input_vcf_gz} \\
     -outfile ${output_avinput} \\
     --includeinfo \\
-    --withzyg \\
+    --allsample \\
+    --withfreq \\
     > stout_sterr/${sample_id}_${mode}_convert2annovar.out \\
     2> stout_sterr/${sample_id}_${mode}_convert2annovar.err
+
+  if [ ! -s "${output_avinput}" ]; then
+    sample_avinput="${output_avinput}.${sample_id}.avinput"
+    if [ -s "\${sample_avinput}" ]; then
+      mv "\${sample_avinput}" "${output_avinput}"
+    else
+      echo "ERROR: convert2annovar did not create ${output_avinput} or \${sample_avinput}" >&2
+      exit 1
+    fi
+  fi
   """
 }
